@@ -2,6 +2,7 @@ package com.nodiki.backend.controller;
 
 import com.nodiki.backend.model.Node;
 import com.nodiki.backend.repository.NodeRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,5 +25,11 @@ public class NodesController {
     @PostMapping
     public Node createNode(@RequestBody Node node) {
         return nodeRepository.save(node);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNode(@PathVariable Long id) {
+        nodeRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }

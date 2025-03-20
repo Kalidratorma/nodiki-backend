@@ -2,6 +2,7 @@ package com.nodiki.backend.controller;
 
 import com.nodiki.backend.model.Edge;
 import com.nodiki.backend.repository.EdgeRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,4 +26,11 @@ public class EdgesController {
     public Edge createEdge(@RequestBody Edge edge) {
         return edgeRepository.save(edge);
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEdge(@PathVariable Long id) {
+        edgeRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
 }
