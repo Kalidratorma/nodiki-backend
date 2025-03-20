@@ -1,4 +1,4 @@
-package com.nodiki.backend.entities;
+package com.nodiki.backend.model;
 
 import jakarta.persistence.*;
 

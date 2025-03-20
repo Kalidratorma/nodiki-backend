@@ -1,6 +1,7 @@
-package com.nodiki.backend.controllers;
+package com.nodiki.backend.controller;
 
-import com.nodiki.backend.entities.Edge;
+import com.nodiki.backend.model.Edge;
+import com.nodiki.backend.repository.EdgeRepository;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
