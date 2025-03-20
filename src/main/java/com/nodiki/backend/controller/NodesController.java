@@ -32,4 +32,17 @@ public class NodesController {
         nodeRepository.deleteById(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Node> updateNode(@PathVariable Long id, @RequestBody Node updatedNode) {
+        return nodeRepository.findById(id)
+                .map(node -> {
+                    node.setLabel(updatedNode.getLabel());
+                    node.setX(updatedNode.getX());
+                    node.setY(updatedNode.getY());
+                    nodeRepository.save(node);
+                    return ResponseEntity.ok(node);
+                })
+                .orElse(ResponseEntity.notFound().build());
+    }
 }
