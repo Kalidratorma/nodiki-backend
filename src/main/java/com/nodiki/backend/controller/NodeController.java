@@ -1,6 +1,7 @@
 package com.nodiki.backend.controller;
 
 import com.nodiki.backend.model.Node;
+import com.nodiki.backend.repository.EdgeRepository;
 import com.nodiki.backend.repository.NodeRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -15,9 +16,11 @@ import java.util.List;
 public class NodeController {
 
     private final NodeRepository nodeRepository;
+    private final EdgeRepository edgeRepository;
 
-    public NodeController(NodeRepository nodeRepository) {
+    public NodeController(NodeRepository nodeRepository, EdgeRepository edgeRepository) {
         this.nodeRepository = nodeRepository;
+        this.edgeRepository = edgeRepository;
     }
 
     @GetMapping
@@ -50,6 +53,14 @@ public class NodeController {
     @Operation(summary = "Delete a node", description = "Removes a node from the graph")
     public ResponseEntity<Void> deleteNode(@PathVariable Long id) {
         nodeRepository.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @DeleteMapping("/clear")
+    @Operation(summary = "Clear all nodes and edges", description = "Deletes all nodes and edges from the graph")
+    public ResponseEntity<Void> clearAllNodes() {
+        edgeRepository.deleteAll();
+        nodeRepository.deleteAll();
         return ResponseEntity.noContent().build();
     }
 }
