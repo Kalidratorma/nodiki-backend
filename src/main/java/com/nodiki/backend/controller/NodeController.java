@@ -1,7 +1,7 @@
 package com.nodiki.backend.controller;
 
+import com.nodiki.backend.dto.PositionUpdateRequest;
 import com.nodiki.backend.model.Node;
-import com.nodiki.backend.repository.EdgeRepository;
 import com.nodiki.backend.repository.NodeRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -9,58 +9,83 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/nodes")
-@Tag(name = "Nodes", description = "API for managing graph nodes")
+@Tag(name = "Nodes", description = "Operations related to nodes on the board.")
 public class NodeController {
 
     private final NodeRepository nodeRepository;
-    private final EdgeRepository edgeRepository;
 
-    public NodeController(NodeRepository nodeRepository, EdgeRepository edgeRepository) {
+    public NodeController(NodeRepository nodeRepository) {
         this.nodeRepository = nodeRepository;
-        this.edgeRepository = edgeRepository;
     }
 
+    @Operation(summary = "Get all nodes")
     @GetMapping
-    @Operation(summary = "Get all nodes", description = "Returns a list of all nodes in the graph")
     public List<Node> getAllNodes() {
         return nodeRepository.findAll();
     }
 
+    @Operation(summary = "Create a new node")
     @PostMapping
-    @Operation(summary = "Create a new node", description = "Creates a new graph node and returns it")
     public Node createNode(@RequestBody Node node) {
         return nodeRepository.save(node);
     }
 
-    @PutMapping("/{id}")
-    @Operation(summary = "Update a node", description = "Updates the label and position of a node")
-    public ResponseEntity<Node> updateNode(@PathVariable Long id, @RequestBody Node updatedNode) {
-        return nodeRepository.findById(id)
-                .map(node -> {
-                    node.setLabel(updatedNode.getLabel());
-                    node.setX(updatedNode.getX());
-                    node.setY(updatedNode.getY());
-                    nodeRepository.save(node);
-                    return ResponseEntity.ok(node);
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @DeleteMapping("/{id}")
-    @Operation(summary = "Delete a node", description = "Removes a node from the graph")
-    public ResponseEntity<Void> deleteNode(@PathVariable Long id) {
-        nodeRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
-    }
-
+    @Operation(summary = "Clear all nodes")
     @DeleteMapping("/clear")
-    @Operation(summary = "Clear all nodes and edges", description = "Deletes all nodes and edges from the graph")
-    public ResponseEntity<Void> clearAllNodes() {
-        edgeRepository.deleteAll();
+    public ResponseEntity<Void> clearNodes() {
         nodeRepository.deleteAll();
-        return ResponseEntity.noContent().build();
+        return ResponseEntity.ok().build();
     }
+
+    @Operation(summary = "Update node label by id")
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateNodeLabel(
+            @PathVariable Long id,
+            @RequestBody Node nodeRequest
+    ) {
+        Optional<Node> nodeOptional = nodeRepository.findById(id);
+        if (nodeOptional.isPresent()) {
+            Node node = nodeOptional.get();
+            node.setLabel(nodeRequest.getLabel());
+            nodeRepository.save(node);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "Update node position by id")
+    @PutMapping("/{id}/position")
+    public ResponseEntity<Void> updateNodePosition(
+            @PathVariable Long id,
+            @RequestBody PositionUpdateRequest position
+    ) {
+        Optional<Node> nodeOptional = nodeRepository.findById(id);
+        if (nodeOptional.isPresent()) {
+            Node node = nodeOptional.get();
+            node.setX(position.getX());
+            node.setY(position.getY());
+            nodeRepository.save(node);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @Operation(summary = "Delete node by id")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNode(@PathVariable Long id) {
+        if (nodeRepository.existsById(id)) {
+            nodeRepository.deleteById(id);
+            return ResponseEntity.ok().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 }
