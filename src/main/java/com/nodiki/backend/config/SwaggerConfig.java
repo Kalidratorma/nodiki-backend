@@ -8,13 +8,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SwaggerConfig {
 
-    @Bean
-    public OpenAPI customOpenAPI() {
-        return new OpenAPI()
-                .info(new Info()
-                        .title("Nodiki API")
-                        .version("1.0")
-                        .description("API documentation for Nodiki backend")
-                );
-    }
+  @Bean
+  public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+        .info(
+            new Info()
+                .title("Nodiki API")
+                .version("1.0")
+                .description("API documentation for Nodiki backend"));
+  }
 }

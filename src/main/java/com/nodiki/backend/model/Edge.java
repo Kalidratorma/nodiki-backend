@@ -9,11 +9,11 @@ import lombok.*;
 @AllArgsConstructor
 public class Edge {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    private String sourceId;
-    private String targetId;
-    private String description;
+  private String sourceId;
+  private String targetId;
+  private String description;
 }
