@@ -1,0 +1,12 @@
+#!/bin/sh
+
+echo "🧼 Running Spotless before commit..."
+
+./gradlew spotlessApply
+
+# Добавляем исправленные файлы
+git add -u
+
+# Проверка
+./gradlew spotlessCheck || exit 1
+
