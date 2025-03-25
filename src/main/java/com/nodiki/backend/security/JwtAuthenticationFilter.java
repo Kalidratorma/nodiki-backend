@@ -24,12 +24,12 @@ import java.io.IOException;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     /**
-     * Service for extracting and validating JWT tokens.
+     * Utility component for extracting and validating JWT tokens.
      */
     private final JwtTokenProvider jwtTokenProvider;
 
     /**
-     * Service to load user details by username.
+     * Service for retrieving user details based on username extracted from the token.
      */
     private final CustomUserDetailsService userDetailsService;
 
@@ -71,5 +71,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         filterChain.doFilter(request, response);
+    }
+
+    /**
+     * Defines which requests should bypass this filter.
+     * Skips filtering for authentication endpoints to allow anonymous access.
+     *
+     * @param request the incoming HTTP request
+     * @return true if the request should NOT be filtered
+     */
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String path = request.getServletPath();
+        return path.startsWith("/api/auth/");
     }
 }
