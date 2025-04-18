@@ -15,10 +15,15 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 /**
- * Configuration class for application-wide security settings.
- * It sets up JWT authentication and basic HTTP security policies.
+ * Global application security configuration.
+ * Handles JWT authentication, session policy, and CORS setup.
  */
 @Configuration
 @RequiredArgsConstructor
@@ -29,11 +34,8 @@ public class SecurityConfig {
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   /**
-   * Configures the security filter chain for HTTP requests.
-   *
-   * @param http the HttpSecurity instance to configure
-   * @return the configured SecurityFilterChain
-   * @throws Exception if an error occurs during configuration
+   * Main security filter chain configuration.
+   * Enables stateless JWT-based authentication and CORS.
    */
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -51,11 +53,24 @@ public class SecurityConfig {
   }
 
   /**
-   * Provides the AuthenticationManager bean used for authenticating users.
-   *
-   * @param config the authentication configuration
-   * @return the AuthenticationManager instance
-   * @throws Exception if an error occurs during creation
+   * Configures CORS policy for the entire API.
+   * Allows frontend app on http://localhost:4200 to communicate with backend.
+   */
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration config = new CorsConfiguration();
+    config.setAllowedOrigins(List.of("http://localhost:4200"));
+    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+    config.setAllowedHeaders(List.of("*"));
+    config.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", config);
+    return source;
+  }
+
+  /**
+   * Provides AuthenticationManager for login service.
    */
   @Bean
   public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
@@ -63,9 +78,7 @@ public class SecurityConfig {
   }
 
   /**
-   * Provides a PasswordEncoder bean using BCrypt hashing algorithm.
-   *
-   * @return a PasswordEncoder instance
+   * BCrypt password encoder.
    */
   @Bean
   public PasswordEncoder passwordEncoder() {
